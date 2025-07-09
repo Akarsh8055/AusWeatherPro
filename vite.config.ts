@@ -27,11 +27,28 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    sourcemap: process.env.NODE_ENV === "development",
+    minify: process.env.NODE_ENV === "production" ? "esbuild" : false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-select'],
+        },
+      },
+    },
   },
   server: {
+    host: process.env.NODE_ENV === "development" ? "127.0.0.1" : false,
+    port: 5000,
+    strictPort: true,
     fs: {
       strict: true,
-      deny: ["**/.*"],
+      deny: ["**/.*", "**/node_modules/**", "**/dist/**"],
+      allow: [".."],
+    },
+    cors: {
+      origin: process.env.NODE_ENV === "development" ? true : false,
     },
   },
 });
